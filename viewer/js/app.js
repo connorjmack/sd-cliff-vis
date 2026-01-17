@@ -10,23 +10,54 @@ async function init() {
   viewer.setFOV(CONFIG.fov);
   viewer.setBackground("gradient");
 
-  // Load metadata
-  try {
-    metadata = await fetchMetadata(CONFIG.dataBaseUrl + CONFIG.metadataUrl);
-    console.log("Loaded metadata:", metadata.epochs.length, "epochs");
+  if (CONFIG.testPointCloudUrl) {
+    await tryLoadTestPointCloud();
+    return;
+  }
 
-    // Load most recent epoch
-    if (metadata.epochs.length > 0) {
-      const latestEpoch = metadata.epochs[metadata.epochs.length - 1];
-      await loadEpoch(latestEpoch);
-    }
+  try {
+    await loadFromMetadata();
   } catch (error) {
     console.error("Failed to initialize:", error);
     showError("Failed to load viewer data");
   }
 }
 
+async function tryLoadTestPointCloud() {
+  const testEpoch = CONFIG.testEpoch || {
+    id: "test",
+    date: "Test LAS",
+    label: "Test LAS",
+    pointCount: null
+  };
+
+  const loaded = await loadPointCloud(CONFIG.testPointCloudUrl, testEpoch, { silent: true });
+  if (!loaded) {
+    showError("Test point cloud not found. Convert data/raw/test.las and try again.");
+  }
+  return loaded;
+}
+
+async function loadFromMetadata() {
+  metadata = await fetchMetadata(CONFIG.dataBaseUrl + CONFIG.metadataUrl);
+  console.log("Loaded metadata:", metadata.epochs.length, "epochs");
+
+  // Load most recent epoch
+  if (metadata.epochs.length > 0) {
+    const latestEpoch = metadata.epochs[metadata.epochs.length - 1];
+    await loadEpoch(latestEpoch);
+  } else {
+    throw new Error("No epochs found in metadata");
+  }
+}
+
 async function loadEpoch(epoch) {
+  const url = CONFIG.dataBaseUrl + epoch.path + "cloud.js";
+  return loadPointCloud(url, epoch, { silent: false });
+}
+
+async function loadPointCloud(url, epoch, options = {}) {
+  const { silent } = options;
   showLoading();
 
   // Remove existing point cloud
@@ -34,8 +65,6 @@ async function loadEpoch(epoch) {
     viewer.scene.pointclouds = [];
     currentPointCloud = null;
   }
-
-  const url = CONFIG.dataBaseUrl + epoch.path + "cloud.js";
 
   try {
     const pointcloud = await Potree.loadPointCloud(url);
@@ -46,10 +75,14 @@ async function loadEpoch(epoch) {
     viewer.fitToScreen();
 
     updateEpochInfo(epoch);
-    hideLoading();
+    return true;
   } catch (error) {
-    console.error("Failed to load epoch:", error);
-    showError("Failed to load point cloud");
+    console.error("Failed to load point cloud:", error);
+    if (!silent) {
+      showError("Failed to load point cloud");
+    }
+    return false;
+  } finally {
     hideLoading();
   }
 }
