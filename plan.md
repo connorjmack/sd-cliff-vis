@@ -4,9 +4,16 @@ This document contains the detailed milestone-based development plan for the Coa
 
 **Principles:**
 - Every milestone ends with a verification step
-- Mock data enables frontend development before real data processing
+- Real test.las data (1.76M points) is used for development and testing
 - Tasks within a milestone can often run in parallel
 - Mark tasks `[x]` as completed
+
+**Available Data:**
+- Source: `data/raw/test.las` (66.8 MB, 1,756,900 points)
+- Converted: `data/converted/test/pointclouds/` (Potree format)
+- Bounds: [473112.55, 3654141.34, 1.89] to [473324.79, 3654353.58, 214.13]
+- Projection: EPSG:26911 (NAD83 UTM Zone 11N)
+- Classification: Ground points (class 2)
 
 ---
 
@@ -16,7 +23,7 @@ This document contains the detailed milestone-based development plan for the Coa
 
 ### Tasks
 
-- [ ] **1.1** Create `pyproject.toml` with Poetry config
+- [x] **1.1** Create `pyproject.toml` with Poetry config
   ```toml
   [tool.poetry]
   name = "sd-cliff-vis"
@@ -35,7 +42,7 @@ This document contains the detailed milestone-based development plan for the Coa
   pytest = "^7.4"
   ```
 
-- [ ] **1.2** Create `.gitignore`
+- [x] **1.2** Create `.gitignore`
   ```
   data/raw/
   data/converted/
@@ -48,7 +55,7 @@ This document contains the detailed milestone-based development plan for the Coa
   node_modules/
   ```
 
-- [ ] **1.3** Create directory structure
+- [x] **1.3** Create directory structure
   ```
   scripts/
   viewer/css/
@@ -59,7 +66,7 @@ This document contains the detailed milestone-based development plan for the Coa
   tests/fixtures/
   ```
 
-- [ ] **1.4** Create `.env.example`
+- [x] **1.4** Create `.env.example`
   ```
   R2_ACCOUNT_ID=
   R2_ACCESS_KEY_ID=
@@ -68,7 +75,7 @@ This document contains the detailed milestone-based development plan for the Coa
   R2_PUBLIC_URL=
   ```
 
-- [ ] **1.5** Run `poetry install` and verify virtual environment created
+- [x] **1.5** Run `poetry install` and verify virtual environment created
 
 ### Verification
 ```bash
@@ -78,52 +85,37 @@ ls -la scripts/ viewer/js/ viewer/css/ data/
 
 ---
 
-## MILESTONE 2: Mock Data & Metadata Schema
-**Goal:** Create mock point cloud data and metadata.json so frontend development can proceed independently.
-**Verification:** `data/converted/metadata.json` exists with valid schema, mock epoch directories exist.
+## MILESTONE 2: Metadata Schema for Test Data
+**Goal:** Create metadata.json referencing the actual test.las data converted to Potree format.
+**Verification:** `data/converted/metadata.json` exists with valid schema pointing to test dataset.
 
 ### Tasks
 
-- [ ] **2.1** Create `data/converted/metadata.json` with mock data
+- [x] **2.1** Create `data/converted/metadata.json` with actual test data
   ```json
   {
     "project": "San Diego Coastal Cliff Monitoring",
     "crs": "EPSG:26911",
     "bounds": {
-      "min": [476000, 3638000, -10],
-      "max": [478000, 3640000, 100]
+      "min": [473112.55, 3654141.34, 1.89],
+      "max": [473324.79, 3654353.58, 214.13]
     },
     "epochs": [
       {
-        "id": "2020-01-survey",
-        "date": "2020-01-15",
-        "label": "January 2020",
-        "pointCount": 5000000,
-        "path": "2020-01-survey/"
-      },
-      {
-        "id": "2021-06-survey",
-        "date": "2021-06-22",
-        "label": "June 2021",
-        "pointCount": 5200000,
-        "path": "2021-06-survey/"
-      },
-      {
-        "id": "2022-01-survey",
-        "date": "2022-01-10",
-        "label": "January 2022",
-        "pointCount": 4800000,
-        "path": "2022-01-survey/"
+        "id": "test",
+        "date": "2024-01-01",
+        "label": "Test Dataset",
+        "pointCount": 1756900,
+        "path": "test/"
       }
     ]
   }
   ```
 
-- [ ] **2.2** Create mock epoch directories (empty placeholders)
+- [x] **2.2** Verify test epoch directory exists with Potree data
   ```bash
-  mkdir -p data/converted/2020-01-survey
-  mkdir -p data/converted/2021-06-survey
-  mkdir -p data/converted/2022-01-survey
+  ls -la data/converted/test/pointclouds/
+  # Should contain: metadata.json, octree.bin, hierarchy.bin
   ```
 
 ### Verification
@@ -139,9 +131,9 @@ cat data/converted/metadata.json | python -m json.tool
 
 ### Tasks
 
-- [ ] **3.1** Download Potree 2.0 release from https://github.com/potree/potree/releases
+- [x] **3.1** Download Potree 2.0 release from https://github.com/potree/potree/releases
 
-- [ ] **3.2** Extract to `viewer/libs/potree/` with structure:
+- [x] **3.2** Extract to `viewer/libs/potree/` with structure:
   ```
   viewer/libs/potree/
   ├── potree.js
@@ -153,7 +145,7 @@ cat data/converted/metadata.json | python -m json.tool
   └── resources/
   ```
 
-- [ ] **3.3** Create minimal test HTML `viewer/potree-test.html`
+- [x] **3.3** Create minimal test HTML `viewer/potree-test.html`
   ```html
   <!DOCTYPE html>
   <html>
@@ -173,7 +165,7 @@ cat data/converted/metadata.json | python -m json.tool
   </html>
   ```
 
-- [ ] **3.4** Serve and test
+- [x] **3.4** Serve and test
   ```bash
   cd viewer && python -m http.server 8080
   # Open http://localhost:8080/potree-test.html
@@ -190,11 +182,11 @@ cat data/converted/metadata.json | python -m json.tool
 **Goal:** Working viewer that loads and displays one point cloud.
 **Verification:** Point cloud renders in browser with orbit controls.
 
-**Requires:** Milestone 3 complete, sample Potree point cloud data (use Potree sample data or convert one test file)
+**Requires:** Milestone 3 complete, test.las data converted to Potree format (already in data/converted/test/)
 
 ### Tasks
 
-- [ ] **4.1** Create `viewer/js/config.js`
+- [x] **4.1** Create `viewer/js/config.js`
   ```javascript
   const CONFIG = {
     dataBaseUrl: window.location.hostname === 'localhost'
@@ -207,7 +199,7 @@ cat data/converted/metadata.json | python -m json.tool
   };
   ```
 
-- [ ] **4.2** Create `viewer/js/utils.js`
+- [x] **4.2** Create `viewer/js/utils.js`
   ```javascript
   function formatNumber(num) {
     return num.toLocaleString();
@@ -226,7 +218,7 @@ cat data/converted/metadata.json | python -m json.tool
   }
   ```
 
-- [ ] **4.3** Create `viewer/css/style.css`
+- [x] **4.3** Create `viewer/css/style.css`
   ```css
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; overflow: hidden; font-family: system-ui, sans-serif; }
@@ -259,7 +251,7 @@ cat data/converted/metadata.json | python -m json.tool
   .hidden { display: none; }
   ```
 
-- [ ] **4.4** Create `viewer/js/app.js`
+- [x] **4.4** Create `viewer/js/app.js`
   ```javascript
   let viewer = null;
   let currentPointCloud = null;
@@ -278,10 +270,10 @@ cat data/converted/metadata.json | python -m json.tool
       metadata = await fetchMetadata(CONFIG.dataBaseUrl + CONFIG.metadataUrl);
       console.log("Loaded metadata:", metadata.epochs.length, "epochs");
 
-      // Load most recent epoch
+      // Load first epoch (test dataset)
       if (metadata.epochs.length > 0) {
-        const latestEpoch = metadata.epochs[metadata.epochs.length - 1];
-        await loadEpoch(latestEpoch);
+        const firstEpoch = metadata.epochs[0];
+        await loadEpoch(firstEpoch);
       }
     } catch (error) {
       console.error("Failed to initialize:", error);
@@ -298,7 +290,7 @@ cat data/converted/metadata.json | python -m json.tool
       currentPointCloud = null;
     }
 
-    const url = CONFIG.dataBaseUrl + epoch.path + "metadata.json";
+    const url = CONFIG.dataBaseUrl + epoch.path + "pointclouds/metadata.json";
 
     try {
       const pointcloud = await Potree.loadPointCloud(url);
@@ -337,7 +329,7 @@ cat data/converted/metadata.json | python -m json.tool
   document.addEventListener("DOMContentLoaded", init);
   ```
 
-- [ ] **4.5** Create `viewer/index.html`
+- [x] **4.5** Create `viewer/index.html`
   ```html
   <!DOCTYPE html>
   <html lang="en">
@@ -378,10 +370,10 @@ cat data/converted/metadata.json | python -m json.tool
   </html>
   ```
 
-- [ ] **4.6** Get sample Potree data for testing (use one of):
-  - Download Potree sample data from their examples
-  - Convert a small LAS file using PotreeConverter CLI
-  - Place in `data/converted/2020-01-survey/`
+- [x] **4.6** Verify test.las data is converted and ready
+  - Data already in `data/converted/test/pointclouds/`
+  - Contains 1,756,900 points from test.las
+  - Potree metadata.json at `data/converted/test/pointclouds/metadata.json`
 
 ### Verification
 - `python -m http.server 8080` from `viewer/`
@@ -405,7 +397,7 @@ cat data/converted/metadata.json | python -m json.tool
   class Timeline {
     constructor(epochs, onEpochChange) {
       this.epochs = epochs;
-      this.currentIndex = epochs.length - 1; // Start at most recent
+      this.currentIndex = 0; // Start at first epoch
       this.onEpochChange = onEpochChange;
       this.isPlaying = false;
       this.playInterval = null;
@@ -721,16 +713,19 @@ cat data/converted/metadata.json | python -m json.tool
   - Extract and add to PATH (or place in project root)
   - Test: `PotreeConverter --version`
 
-- [ ] **6.4** Test conversion with sample LAS file
+- [ ] **6.4** Test conversion with actual test.las file
   ```bash
-  poetry run python scripts/convert.py /path/to/sample.las -o data/converted
+  # Already converted - verify it works:
+  poetry run python scripts/convert.py data/raw/test.las -o data/converted -n test
+
+  # This should create/update data/converted/test/ with Potree files
   ```
 
 ### Verification
-- Script runs without errors
-- Output directory contains `metadata.json`, `octree.bin`, `hierarchy.bin`
+- Script runs without errors on test.las
+- Output directory `data/converted/test/pointclouds/` contains `metadata.json`, `octree.bin`, `hierarchy.bin`
 - Epoch metadata JSON is written
-- Point cloud loads in viewer (Milestone 4)
+- Point cloud (1.76M points) loads in viewer (Milestone 4)
 
 ---
 
@@ -919,7 +914,7 @@ cat data/converted/metadata.json | python -m json.tool
       this.viewerLeft = null;
       this.viewerRight = null;
       this.leftIndex = 0;
-      this.rightIndex = epochs.length - 1;
+      this.rightIndex = Math.min(1, epochs.length - 1); // Use second epoch if available, otherwise same as left
       this.syncEnabled = true;
       this.isSyncing = false;
     }
@@ -984,7 +979,7 @@ cat data/converted/metadata.json | python -m json.tool
       const rightEpoch = this.epochs[this.rightIndex];
 
       const loadIntoViewer = async (viewer, epoch) => {
-        const url = CONFIG.dataBaseUrl + epoch.path + "metadata.json";
+        const url = CONFIG.dataBaseUrl + epoch.path + "pointclouds/metadata.json";
         const pc = await Potree.loadPointCloud(url);
         viewer.scene.addPointCloud(pc);
         viewer.fitToScreen();
@@ -1046,7 +1041,7 @@ cat data/converted/metadata.json | python -m json.tool
     async reloadLeft() {
       this.viewerLeft.scene.pointclouds = [];
       const epoch = this.epochs[this.leftIndex];
-      const url = CONFIG.dataBaseUrl + epoch.path + "metadata.json";
+      const url = CONFIG.dataBaseUrl + epoch.path + "pointclouds/metadata.json";
       const pc = await Potree.loadPointCloud(url);
       this.viewerLeft.scene.addPointCloud(pc);
       this.updateLabels();
@@ -1055,7 +1050,7 @@ cat data/converted/metadata.json | python -m json.tool
     async reloadRight() {
       this.viewerRight.scene.pointclouds = [];
       const epoch = this.epochs[this.rightIndex];
-      const url = CONFIG.dataBaseUrl + epoch.path + "metadata.json";
+      const url = CONFIG.dataBaseUrl + epoch.path + "pointclouds/metadata.json";
       const pc = await Potree.loadPointCloud(url);
       this.viewerRight.scene.addPointCloud(pc);
       this.updateLabels();

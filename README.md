@@ -38,7 +38,9 @@ sd-cliff-vis/
 poetry install
 
 # Serve viewer locally
-cd viewer && python -m http.server 8080
+poetry run python -m http.server 8080
+
+Then open `http://localhost:8080/viewer/`
 ```
 
 Then open `http://localhost:8080/potree-test.html` for the Potree sanity check.

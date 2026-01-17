@@ -31,7 +31,7 @@ async function tryLoadTestPointCloud() {
     pointCount: null
   };
 
-  const loaded = await loadPointCloud(CONFIG.testPointCloudUrl, testEpoch, { silent: true });
+  const loaded = await loadPointCloud(CONFIG.testPointCloudUrl, testEpoch, { silent: false });
   if (!loaded) {
     showError("Test point cloud not found. Convert data/raw/test.las and try again.");
   }
