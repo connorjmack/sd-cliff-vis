@@ -67,7 +67,8 @@ async function loadPointCloud(url, epoch, options = {}) {
   }
 
   try {
-    const pointcloud = await Potree.loadPointCloud(url);
+    const result = await Potree.loadPointCloud(url);
+    const pointcloud = result && result.pointcloud ? result.pointcloud : result;
     viewer.scene.addPointCloud(pointcloud);
     currentPointCloud = pointcloud;
 

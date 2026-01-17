@@ -14,6 +14,7 @@ This project serves time-series point cloud epochs in a Potree-based viewer, wit
 - Potree 1.8.x distribution is checked in under `viewer/libs/potree/`.
 - Viewer scaffolding lives in `viewer/js/` and `viewer/css/`.
 - Smoke test page lives at `viewer/potree-test.html`.
+- Local viewer prefers `data/converted/test/metadata.json` when present (convert from `data/raw/test.las`).
 - Conversion and upload scripts are planned but not implemented yet (see `plan.md`).
 
 ## Repository Layout
@@ -41,6 +42,12 @@ cd viewer && python -m http.server 8080
 ```
 
 Then open `http://localhost:8080/potree-test.html` for the Potree sanity check.
+
+To test with the sample LAS file, convert it to Potree format and then open `http://localhost:8080`:
+
+```bash
+PotreeConverter data/raw/test.las -o data/converted/test --generate-page NO
+```
 
 ## Data Conversion
 

@@ -1,10 +1,12 @@
+const IS_LOCAL = ['localhost', '127.0.0.1', '::1', '0.0.0.0'].includes(window.location.hostname);
+
 const CONFIG = {
-  dataBaseUrl: window.location.hostname === 'localhost'
+  dataBaseUrl: IS_LOCAL
     ? '../data/converted/'
     : 'https://YOUR_R2_URL/',
   metadataUrl: 'metadata.json',
-  testPointCloudUrl: window.location.hostname === 'localhost'
-    ? '../data/converted/test/cloud.js'
+  testPointCloudUrl: IS_LOCAL
+    ? '../data/converted/test/pointclouds/metadata.json'
     : null,
   testEpoch: {
     id: 'test',
