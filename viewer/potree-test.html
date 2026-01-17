@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Potree Test</title>
+  <script src="libs/potree/libs/jquery/jquery-3.1.1.min.js"></script>
+  <script src="libs/potree/libs/three.js/build/three.min.js"></script>
+  <script src="libs/potree/build/potree/potree.js"></script>
+  <link rel="stylesheet" href="libs/potree/build/potree/potree.css">
+  <style>
+    body, html { margin: 0; padding: 0; overflow: hidden; }
+  </style>
+</head>
+<body>
+  <div id="potree_render_area" style="width:100vw;height:100vh;"></div>
+  <script>
+    const viewer = new Potree.Viewer(document.getElementById("potree_render_area"));
+    console.log("Potree loaded:", Potree.version);
+  </script>
+</body>
+</html>
