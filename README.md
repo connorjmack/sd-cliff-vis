@@ -2,22 +2,32 @@
 
 Interactive 3D web viewer for San Diego coastal cliff erosion monitoring using time-series LiDAR point cloud data.
 
-- Stack: Potree 2.0, Vanilla JS, Python (laspy), Cloudflare Pages + R2
+- Stack: Potree 1.8.x (vendored), Vanilla JS, Python (laspy), Cloudflare Pages + R2 (planned)
 - Detailed implementation plan: `plan.md`
 
 ## Overview
 
 This project serves time-series point cloud epochs in a Potree-based viewer, with tools to convert LAS/LAZ data into Potree octree format and upload the results to Cloudflare R2. The long-form development checklist lives in `plan.md`.
 
+## Current Status
+
+- Potree 1.8.x distribution is checked in under `viewer/libs/potree/`.
+- Viewer scaffolding lives in `viewer/js/` and `viewer/css/`.
+- Smoke test page lives at `viewer/potree-test.html`.
+- Conversion and upload scripts are planned but not implemented yet (see `plan.md`).
+
 ## Repository Layout
 
 ```
 sd-cliff-vis/
+├── pyproject.toml               # Poetry config
+├── poetry.lock                  # Locked Python deps
 ├── plan.md                      # Milestone plan
 ├── CLAUDE.md                    # Project reference
-├── scripts/                     # Conversion + upload tools
-├── viewer/                      # Web viewer
-└── data/                        # Local-only (gitignored)
+├── scripts/                     # Conversion + upload tools (planned)
+├── viewer/                      # Web viewer + Potree vendor drop
+├── data/                        # Local-only (gitignored)
+└── tests/fixtures/              # Test fixtures (empty)
 ```
 
 ## Local Development
@@ -30,32 +40,19 @@ poetry install
 cd viewer && python -m http.server 8080
 ```
 
-Then open `http://localhost:8080`.
+Then open `http://localhost:8080/potree-test.html` for the Potree sanity check.
 
 ## Data Conversion
 
-```bash
-# Convert a single LAS/LAZ file
-poetry run python scripts/convert.py /path/to/file.las
-
-# Batch convert a directory of LAS/LAZ files
-poetry run python scripts/batch_convert.py data/raw/
-```
-
-The conversion outputs Potree octree data and per-epoch metadata into `data/converted/`.
+Planned scripts will live under `scripts/` (see `plan.md` for the exact CLI).
 
 ## Cloudflare R2 Upload
 
-```bash
-# Upload converted data to R2
-poetry run python scripts/upload_to_r2.py
-```
-
-Populate `.env` (see `.env.example`) with your R2 credentials before uploading.
+Planned script will live under `scripts/` and use `.env` (see `.env.example`).
 
 ## Viewer Data Schema
 
-`data/converted/metadata.json` is the index consumed by the viewer:
+Planned schema for `data/converted/metadata.json`:
 
 ```json
 {
@@ -76,7 +73,7 @@ Populate `.env` (see `.env.example`) with your R2 credentials before uploading.
 
 ## Potree Setup
 
-Download Potree 2.0 and extract it to `viewer/libs/potree/` with the standard Potree distribution layout. See `plan.md` for the expected directory structure.
+Potree is already extracted in `viewer/libs/potree/`. To upgrade, replace that directory with a newer Potree distribution and update any paths in `viewer/potree-test.html` or future viewer pages.
 
 ## Troubleshooting
 

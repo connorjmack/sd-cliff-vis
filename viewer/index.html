@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>San Diego Coastal LiDAR Viewer</title>
+
+  <!-- Potree dependencies -->
+  <script src="libs/potree/libs/jquery/jquery-3.1.1.min.js"></script>
+  <script src="libs/potree/libs/three.js/build/three.min.js"></script>
+  <script src="libs/potree/libs/other/BinaryHeap.js"></script>
+  <script src="libs/potree/build/potree/potree.js"></script>
+  <link rel="stylesheet" href="libs/potree/build/potree/potree.css">
+
+  <!-- App styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="potree-container">
+    <div id="potree-render-area"></div>
+  </div>
+
+  <div id="epoch-info">
+    <h3 id="epoch-date">Loading...</h3>
+    <span id="epoch-points"></span>
+  </div>
+
+  <div id="loading">Loading point cloud...</div>
+
+  <div id="timeline-container"></div>
+
+  <!-- App scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
