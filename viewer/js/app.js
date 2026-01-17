@@ -56,7 +56,7 @@ async function loadEpoch(epoch) {
   return loadPointCloud(url, epoch, { silent: false });
 }
 
-async function loadPointCloud(url, epoch, options = {}) {
+function loadPointCloud(url, epoch, options = {}) {
   const { silent } = options;
   showLoading();
 
@@ -66,26 +66,36 @@ async function loadPointCloud(url, epoch, options = {}) {
     currentPointCloud = null;
   }
 
-  try {
-    const result = await Potree.loadPointCloud(url);
-    const pointcloud = result && result.pointcloud ? result.pointcloud : result;
-    viewer.scene.addPointCloud(pointcloud);
-    currentPointCloud = pointcloud;
+  return new Promise((resolve, reject) => {
+    Potree.loadPointCloud(url, epoch.id || "pointcloud", e => {
+      try {
+        const pointcloud = e.pointcloud;
 
-    // Fit camera to point cloud
-    viewer.fitToScreen();
+        // Configure point cloud material
+        let material = pointcloud.material;
+        material.size = 1;
+        material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+        material.shape = Potree.PointShape.SQUARE;
 
-    updateEpochInfo(epoch);
-    return true;
-  } catch (error) {
-    console.error("Failed to load point cloud:", error);
-    if (!silent) {
-      showError("Failed to load point cloud");
-    }
-    return false;
-  } finally {
-    hideLoading();
-  }
+        viewer.scene.addPointCloud(pointcloud);
+        currentPointCloud = pointcloud;
+
+        // Fit camera to point cloud
+        viewer.fitToScreen();
+
+        updateEpochInfo(epoch);
+        hideLoading();
+        resolve(true);
+      } catch (error) {
+        console.error("Failed to load point cloud:", error);
+        if (!silent) {
+          showError("Failed to load point cloud: " + error.message);
+        }
+        hideLoading();
+        reject(error);
+      }
+    });
+  });
 }
 
 function updateEpochInfo(epoch) {

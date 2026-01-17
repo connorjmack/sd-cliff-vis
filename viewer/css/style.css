@@ -1,8 +1,8 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { height: 100%; overflow: hidden; font-family: system-ui, sans-serif; }
 
-#potree-container { position: absolute; width: 100%; height: 100%; }
-#potree-render-area { position: absolute; width: 100%; height: calc(100% - 80px); }
+#potree-container { position: absolute; width: 100%; height: 100%; left: 0; top: 0; }
+#potree-render-area { position: absolute; width: 100%; height: 100%; }
 
 #epoch-info {
   position: absolute;
