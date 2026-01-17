@@ -38,6 +38,41 @@
     <span id="epoch-points"></span>
   </div>
 
+  <div id="legend-panel" class="hud-panel">
+    <h4>Legend</h4>
+    <div class="legend-row">
+      <span class="legend-swatch swatch-primary"></span>
+      <span>Point cloud (meters, EPSG:26911)</span>
+    </div>
+    <div class="legend-row">
+      <span class="legend-swatch swatch-highlight"></span>
+      <span>High intensity / RGB (if present)</span>
+    </div>
+  </div>
+
+  <div id="controls-panel" class="hud-panel">
+    <h4>Navigation</h4>
+    <ul>
+      <li>Scroll: zoom in / out</li>
+      <li>Left drag: orbit</li>
+      <li>Right drag: pan</li>
+      <li>Double click: focus</li>
+    </ul>
+  </div>
+
+  <div id="north-arrow" aria-label="North">
+    <span class="north-label">N</span>
+    <span class="north-arrow-head"></span>
+  </div>
+
+  <div id="scale-bar" aria-label="Scale bar">
+    <div id="scale-bar-bar">
+      <span class="scale-tick scale-tick-left"></span>
+      <span class="scale-tick scale-tick-right"></span>
+    </div>
+    <div id="scale-bar-label">-- m</div>
+  </div>
+
   <div id="loading">Loading point cloud...</div>
 
   <div id="timeline-container"></div>
@@ -45,6 +80,7 @@
   <!-- App scripts -->
   <script src="js/config.js"></script>
   <script src="js/utils.js"></script>
+  <script src="js/timeline.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

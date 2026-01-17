@@ -2,12 +2,10 @@ const IS_LOCAL = ['localhost', '127.0.0.1', '::1', '0.0.0.0'].includes(window.lo
 
 const CONFIG = {
   dataBaseUrl: IS_LOCAL
-    ? '../data/converted/'
+    ? '/data/converted/'
     : 'https://YOUR_R2_URL/',
   metadataUrl: 'metadata.json',
-  testPointCloudUrl: IS_LOCAL
-    ? '../data/converted/test/pointclouds/metadata.json'
-    : null,
+  testPointCloudUrl: null, // Disabled - now using metadata.json with multiple epochs
   testEpoch: {
     id: 'test',
     date: 'Test LAS',
